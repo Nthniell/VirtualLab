@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Lab</title>
+    <link rel="stylesheet" href="./assets/style/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.5.2/math.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div>
+                <h1>Virtual Lab</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="tutorial.html">Tutorial</a></li>
+                    <li><a href="virtualLab.html">Virtual Lab</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section class="input-section">
+            <h2>Masukkan Koefisien Fungsi</h2>
+            <label for="inputA">a:</label>
+            <input type="number" id="inputA" value="1" step="0.1" />
+            <label for="inputB">b:</label>
+            <input type="number" id="inputB" value="0" step="0.1" />
+            <label for="inputC">c:</label>
+            <input type="number" id="inputC" value="0" step="0.1" />
+            <button onclick="plotGraph()">Plot Grafik</button>
+            <button onclick="window.location.reload()">Hapus Grafik</button>
+        </section>
+        <section class="equation-section">
+            <h2>Persamaan Fungsi:</h2>
+            <p id="equation">y = 1x² + 0x + 0</p>
+        </section>
+        <script>
+            function updateEquation() {
+                const a = document.getElementById('inputA').value;
+                const b = document.getElementById('inputB').value;
+                const c = document.getElementById('inputC').value;
+                document.getElementById('equation').innerText = `y = ${a}x² + ${b}x + ${c}`;
+                plotGraph();
+            }
+
+            function updateA() {
+                const sliderValue = document.getElementById('sliderA').value;
+                document.getElementById('inputA').value = sliderValue;
+                updateEquation();
+            }
+
+            function updateB() {
+                const sliderValue = document.getElementById('sliderB').value;
+                document.getElementById('inputB').value = sliderValue;
+                updateEquation();
+            }
+
+            function updateC() {
+                const sliderValue = document.getElementById('sliderC').value;
+                document.getElementById('inputC').value = sliderValue;
+                updateEquation();
+            }
+
+            document.getElementById('inputA').addEventListener('input', updateEquation);
+            document.getElementById('inputB').addEventListener('input', updateEquation);
+            document.getElementById('inputC').addEventListener('input', updateEquation);
+        </script>
+        <section>
+            <div class="slider-container">
+                <label>Ubah Parameter a:</label>
+                <input type="range" id="sliderA" min="-100" max="100" value="0" step="1" oninput="updateA()" />
+                <label>Ubah Parameter b:</label>
+                <input type="range" id="sliderB" min="-100" max="100" value="0" step="1" oninput="updateB()" />
+                <label>Ubah Parameter c:</label>
+                <input type="range" id="sliderC" min="-100" max="100" value="0" step="1" oninput="updateC()" />
+            </div>
+        </section>
+        <section class="game-section">
+            <h2>Grafik fungsi:</h2>
+            <canvas id="graphCanvas"></canvas>
+        </section>
+    </main>
+    <script src="./assets/js/graph.js"></script>
+</body>
+
+<footer>
+    <div class="container">
+        <p>&copy; Nathaniel Liady</p>
+    </div> 
+</footer>
+</html>

@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logged Out - Guess the Graph</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(45deg, #6b48ff, #1e90ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        h1 {
+            margin-bottom: 1.5rem;
+        }
+
+        .login-link {
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+
+        .login-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1>You have been logged out</h1>
+    <p>Thank you for playing Guess the Graph</p>
+    <a href="index.html" class="login-link">Login Again</a>
+
+    <script>
+        // Clear any remaining auth state
+        if (window.firebase) {
+            firebase.auth().signOut();
+        }
+        // Prevent going back to protected pages
+        if (window.history && window.history.pushState) {
+            window.history.pushState('', '', window.location.href);
+            window.onpopstate = function() {
+                window.history.pushState('', '', window.location.href);
+            };
+        }
+    </script>
+</body>
+</html>

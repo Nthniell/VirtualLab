@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function Graphs</title>
+    <link rel="stylesheet" href="./assets/style/style.css">
+    <style>
+        header, footer {
+            border: 1px solid #000; /* Reduced border size */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <div>
+                <h1>Fungsi Grafik</h1>
+            </div>
+            <nav>
+                <div id="menu-placeholder"></div>
+            </nav>
+        </div>
+    </header>
+
+<!-- Placeholder for the menu -->
+<div id="menu-placeholder"></div>
+
+<main>
+    <div class="container">
+        <h2>Apa itu Grafik fungsi?</h2>
+        <p>Grafik fungsi adalah representasi visual dari hubungan antara dua variabel, biasanya pada bidang kartesius (sumbu x dan y), di mana setiap nilai input (x) memiliki satu nilai output (y) berdasarkan aturan tertentu (fungsi).</p>
+        
+        <div class="slideshow-container">
+            <div class="slides">
+                <img src="./assets/sources/grafik1.jpg" alt="Graph 1">
+            </div>
+            <div class="slides">
+                <img src="./assets/sources/grafik2.jpg" alt="Graph 2">
+            </div>
+            <div class="slides">
+                <img src="./assets/sources/grafik3.jpg" alt="Graph 3">
+            </div>
+            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+            <a class="next" onclick="plusSlides(1)">&#10095;</a>
+        </div>
+        <div class="dot-container">
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+        </div>
+    </div>
+</main>
+
+<script src="./assets/js/animation.js"></script>
+<script src="./assets/js/menu.js"></script>
+<script>
+    let startX;
+
+    document.querySelector('.slideshow-container').addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+    });
+
+    document.querySelector('.slideshow-container').addEventListener('touchmove', function(e) {
+        if (!startX) return;
+        let endX = e.touches[0].clientX;
+        let diffX = startX - endX;
+        if (diffX > 50) {
+            plusSlides(1);
+            startX = null;
+        } else if (diffX < -50) {
+            plusSlides(-1);
+            startX = null;
+        }
+    });
+</script>
+
+<footer>
+    <div class="container">
+        <p>&copy; Nathaniel Liady</p>
+    </div>
+</footer>
+</body>
+</html>

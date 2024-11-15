@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - Virtual Lab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(45deg, #6b48ff, #1e90ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            margin: 1rem 0;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1e90ff;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background: #1e90ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #1873cc;
+        }
+
+        .error {
+            color: #ff4444;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .login-link {
+            color: white;
+            text-decoration: none;
+            margin-top: 1rem;
+        }
+
+        .login-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Guess the Graph</h1>
+
+    <div class="container">
+        <h2 style="color: #333; margin-bottom: 1.5rem; text-align: center;">Sign Up</h2>
+        <div class="form-group">
+            <input type="email" id="signup-email" placeholder="Email" autocomplete="email">
+            <input type="password" id="signup-password" placeholder="Password" autocomplete="new-password">
+            <button onclick="signUp()">Sign Up</button>
+        </div>
+    </div>
+
+    <a href="index.html" class="login-link">Already have an account? Login here</a>
+
+    <script type="module">
+        // Import Firebase modules using ES modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } 
+        from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmbQ5sgDW5az4gVWFdqkq7PD-rW41W8LU",
+            authDomain: "guessthegraph.firebaseapp.com",
+            projectId: "guessthegraph",
+            storageBucket: "guessthegraph.firebasestorage.app",
+            messagingSenderId: "564967841167",
+            appId: "1:564967841167:web:c5a7a63d8d8cdebce9bffa",
+            measurementId: "G-VB3GG43XG7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.signUp = async function() {
+            try {
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+
+                if (!email || !password) {
+                    throw new Error('Please fill in all fields');
+                }
+
+                // Create user
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                
+                // Initialize user data in Firestore
+                const db = getFirestore(app);
+                await setDoc(doc(db, "users", userCredential.user.uid), {
+                    highestLevel: 1,
+                    totalScore: 0,
+                    levels: {
+                        level1: true,
+                        level2: false,
+                        level3: false,
+                        level4: false,
+                        level5: false,
+                        level6: false,
+                        level7: false,
+                        level8: false,
+                        level9: false,
+                        level10: false
+                    }
+                });
+
+                alert('Signup successful');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error(error);
+                alert('Signup failed: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

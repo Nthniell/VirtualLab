@@ -3,60 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Function Graphs</title>
-    <link rel="stylesheet" href="./assets/style/style.css">
+    <title>Firebase Auth</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(45deg, #6b48ff, #1e90ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            margin: 1rem 0;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1e90ff;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background: #1e90ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #1873cc;
+        }
+
+        .error {
+            color: #ff4444;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .signup-link {
+            color: white;
+            text-decoration: none;
+            margin-top: 1rem;
+        }
+
+        .signup-link:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        #error-message {
+            color: #ff4444;
+            margin-top: 0.5rem;
+            text-align: center;
+            display: none;
+        }
+    </style>
 </head>
 <body>
+    <h1>Welcome to Guess the Graph</h1>
 
-    <header>
-        <div class="container">
-            <div>
-                <h1>Fungsi Grafik</h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="tutorial.html">Tutorial</a></li>
-                    <li><a href="virtualLab.html">Virtual Lab</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-<!-- Placeholder for the menu -->
-<div id="menu-placeholder"></div>
-
-<div class="container">
-    <h2>Apa itu Grafik fungsi?</h2>
-    <p>Grafik fungsi adalah representasi visual dari hubungan antara dua variabel, biasanya pada bidang kartesius (sumbu x dan y), di mana setiap nilai input (x) memiliki satu nilai output (y) berdasarkan aturan tertentu (fungsi).</p>
-    
-    <div class="slideshow-container">
-        <div class="slides">
-            <img src="./assets/sources/grafik1.jpg" alt="Graph 1">
-        </div>
-        <div class="slides">
-            <img src="./assets/sources/grafik2.jpg" alt="Graph 2">
-        </div>
-        <div class="slides">
-            <img src="./assets/sources/grafik3.jpg" alt="Graph 3">
-        </div>
-        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="next" onclick="plusSlides(1)">&#10095;</a>
-    </div>
-    <div class="dot-container">
-        <span class="dot" onclick="currentSlide(1)"></span>
-        <span class="dot" onclick="currentSlide(2)"></span>
-        <span class="dot" onclick="currentSlide(3)"></span>
-    </div>
-</div>
-
-
-<script src="./assets/js/animation.js"></script>
-
-</body>
-<footer>
     <div class="container">
-        <p>&copy; Nathaniel Liady</p>
+        <h2 style="color: #333; margin-bottom: 1.5rem; text-align: center;">Login</h2>
+        <div class="form-group">
+            <input type="email" id="login-email" placeholder="Email" autocomplete="email">
+            <input type="password" id="login-password" placeholder="Password" autocomplete="current-password">
+            <div id="error-message"></div>
+            <button id="login-button" onclick="signIn()">Login</button>
+        </div>
     </div>
-</footer>
+
+    <a href="signup.html" class="signup-link">Don't have an account? Sign up here</a>
+
+    <script type="module">
+        // Import Firebase modules using ES modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } 
+        from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmbQ5sgDW5az4gVWFdqkq7PD-rW41W8LU",
+            authDomain: "guessthegraph.firebaseapp.com",
+            projectId: "guessthegraph",
+            storageBucket: "guessthegraph.firebasestorage.app",
+            messagingSenderId: "564967841167",
+            appId: "1:564967841167:web:c5a7a63d8d8cdebce9bffa",
+            measurementId: "G-VB3GG43XG7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.signIn = async function() {
+            const button = document.getElementById('login-button');
+            const errorDiv = document.getElementById('error-message');
+            
+            try {
+                button.classList.add('loading');
+                button.textContent = 'Logging in...';
+                errorDiv.style.display = 'none';
+                
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                if (!email || !password) {
+                    throw new Error('Please fill in all fields');
+                }
+
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = 'home.html'; // Add redirect after successful login
+            } catch (error) {
+                console.error(error);
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                button.classList.remove('loading');
+                button.textContent = 'Login';
+            }
+        }
+    </script>
+</body>
 </html>

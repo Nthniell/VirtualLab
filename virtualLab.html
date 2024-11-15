@@ -5,92 +5,142 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtual Lab</title>
     <link rel="stylesheet" href="./assets/style/style.css">
+    <!-- Load Firebase first -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <!-- Then load other libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.5.2/math.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
+    
+    <!-- Add this line before other scripts -->
+    <script src="./assets/js/menu.js" defer></script>
+    
+    <!-- Finally load your scripts -->
+    <script src="./assets/js/level.js"></script>
+    <script src="./assets/js/graph.js"></script>
+    <style>
+        header, footer {
+            border: 1px solid #000; /* Reduced border size */
+        }
+    </style>
 </head>
 <body>
     <header>
         <div class="container">
             <div>
-                <h1>Virtual Lab</h1>
+                <h1>Guess the Graph</h1>
             </div>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="tutorial.html">Tutorial</a></li>
-                    <li><a href="virtualLab.html">Virtual Lab</a></li>
-                </ul>
-            </nav>
+            <nav id="menu-placeholder"></nav>
         </div>
     </header>
     <main>
-        <section class="input-section">
-            <h2>Masukkan Koefisien Fungsi</h2>
-            <label for="inputA">a:</label>
-            <input type="number" id="inputA" value="1" step="0.1" />
-            <label for="inputB">b:</label>
-            <input type="number" id="inputB" value="0" step="0.1" />
-            <label for="inputC">c:</label>
-            <input type="number" id="inputC" value="0" step="0.1" />
-            <button onclick="plotGraph()">Plot Grafik</button>
-            <button onclick="window.location.reload()">Hapus Grafik</button>
-        </section>
-        <section class="equation-section">
-            <h2>Persamaan Fungsi:</h2>
-            <p id="equation">y = 1x² + 0x + 0</p>
-        </section>
-        <script>
-            function updateEquation() {
-                const a = document.getElementById('inputA').value;
-                const b = document.getElementById('inputB').value;
-                const c = document.getElementById('inputC').value;
-                document.getElementById('equation').innerText = `y = ${a}x² + ${b}x + ${c}`;
-                plotGraph();
-            }
+        <div class="container">
+            <section class="guess-game-section">
+                <h2>Guess the Graph</h2>
+                <br>
+                <button onclick="setLevelAndStartGame('level1')">Level 1</button>
+                <button onclick="setLevelAndStartGame('level2')">Level 2</button>
+                <button onclick="setLevelAndStartGame('level3')">Level 3</button>
+                <button onclick="setLevelAndStartGame('level4')">Level 4</button>
+                <button onclick="setLevelAndStartGame('level5')">Level 5</button>
+                <button onclick="setLevelAndStartGame('level6')">Level 6</button>
+                <button onclick="setLevelAndStartGame('level7')">Level 7</button>
+                <button onclick="setLevelAndStartGame('level8')">Level 8</button>
+                <button onclick="setLevelAndStartGame('level9')">Level 9</button>
+                <button onclick="setLevelAndStartGame('level10')">Level 10</button>
+                <button onclick="resetGame()">Reset Game</button>
+                <div id="gameArea" style="display:none;">
+                    <!-- <p>Persamaan apa yang ditampilkan di bawah?</p>
+                    <label for="guessA">a:</label>
+                    <input type="number" id="guessA" step="0.1" />
+                    <label for="guessB">b:</label>
+                    <input type="number" id="guessB" step="0.1" />
+                    <label for="guessC">c:</label>
+                    <input type="number" id="guessC" step="0.1" />
+                    <button onclick="submitGuess()">Cek Jawaban</button>
+                    <p id="gameMessage"></p> -->
+                </div>
+            </section>
+            <section class="input-section">
+                <h2>Persamaan apa yang ditampilkan di bawah?</h2>
+                <br>
+                <label for="inputEquation">Persamaan:</label>
+                <input type="text" id="inputEquation" value="" />
+                <button onclick="plotGraph()">Plot Grafik</button>
+                <button onclick="submitGuess()">Cek Jawaban</button>
+                <button onclick="clearUserGraph()">Hapus Grafik</button>
+                <p id="gameMessage"></p>
+            </section>
+            <script>
+                function updateEquation() {
+                    const equation = document.getElementById('inputEquation').value;
+                    document.getElementById('equation').innerText = `f(x) = ${equation}`;
+                    plotGraph();
+                }
 
-            function updateA() {
-                const sliderValue = document.getElementById('sliderA').value;
-                document.getElementById('inputA').value = sliderValue;
-                updateEquation();
-            }
+                document.getElementById('inputEquation').addEventListener('input', updateEquation);
 
-            function updateB() {
-                const sliderValue = document.getElementById('sliderB').value;
-                document.getElementById('inputB').value = sliderValue;
-                updateEquation();
-            }
+                function plotGraph() {
+                    const equation = document.getElementById('inputEquation').value;
+                    const expr = math.compile(equation);
 
-            function updateC() {
-                const sliderValue = document.getElementById('sliderC').value;
-                document.getElementById('inputC').value = sliderValue;
-                updateEquation();
-            }
+                    // Generate data points
+                    const xValues = math.range(-100, 100, 0.5).toArray();
+                    const yValues = xValues.map(x => {
+                        try {
+                            return expr.evaluate({ x });
+                        } catch (error) {
+                            return NaN; // Handle invalid values
+                        }
+                    });
 
-            document.getElementById('inputA').addEventListener('input', updateEquation);
-            document.getElementById('inputB').addEventListener('input', updateEquation);
-            document.getElementById('inputC').addEventListener('input', updateEquation);
-        </script>
-        <section>
-            <div class="slider-container">
-                <label>Ubah Parameter a:</label>
-                <input type="range" id="sliderA" min="-100" max="100" value="0" step="1" oninput="updateA()" />
-                <label>Ubah Parameter b:</label>
-                <input type="range" id="sliderB" min="-100" max="100" value="0" step="1" oninput="updateB()" />
-                <label>Ubah Parameter c:</label>
-                <input type="range" id="sliderC" min="-100" max="100" value="0" step="1" oninput="updateC()" />
-            </div>
-        </section>
-        <section class="game-section">
-            <h2>Grafik fungsi:</h2>
-            <canvas id="graphCanvas"></canvas>
-        </section>
+                    // Update the chart with new data
+                    chart.data.labels = xValues;
+                    chart.data.datasets[0].data = yValues;
+                    chart.data.datasets[0].label = `Grafik dari f(x) = ${equation}`;
+                    chart.update();
+                }
+            </script>
+            <section class="game-section">
+                <h2>Grafik fungsi:</h2>
+                <div style="position: relative;">
+                    <canvas id="graphCanvas"></canvas>
+                    <div style="position: absolute; bottom: 475px; right: 20px;">
+                        <button onclick="zoomIn()">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
+                            </svg>
+                        </button>
+                        <button onclick="zoomOut()">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM13.5 10.5h-6" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
-    <script src="./assets/js/graph.js"></script>
+    <footer>
+        <div class="container">
+            <p>&copy; Nathaniel Liady</p>
+        </div> 
+    </footer>
+    <!-- Remove or comment out this line since we already included it in head -->
+    <!-- <script src="./assets/js/menu.js"></script> -->
+    <script>
+        // Add this to handle level button clicks
+        document.querySelectorAll('.guess-game-section button').forEach(button => {
+            if (button.textContent.toLowerCase().includes('level')) {
+                button.addEventListener('click', function() {
+                    const level = this.textContent.toLowerCase().replace(' ', '');
+                    setLevelAndStartGame(level);
+                });
+            }
+        });
+    </script>
 </body>
-
-<footer>
-    <div class="container">
-        <p>&copy; Nathaniel Liady</p>
-    </div> 
-</footer>
 </html>
